@@ -2,12 +2,12 @@
 require_once __DIR__ . '/common.php';
 
 htmlBegin();
-$link = mysql_connect('localhost:3306', 'root', 'root', '');
-mysql_select_db('praktyki2016');
-
+$link = mysql_connect('localhost:3306', 'root', 'root');
 if (empty($link)) {
 	die('Błąd połączenia do bazy danych.' . mysql_error());
 }
+
+mysql_select_db('praktyki2016');
 
 $sql = 'SET NAMES utf8';
 $result = mysql_query($sql);
@@ -16,7 +16,7 @@ $result = mysql_query($sql);
 dump($sql, BG_DATA);
 dump($result);
 
-$sql2 = 'SELECT * FROM Klienci';
+$sql2 = 'SELECT KlientId, Adres, Imię, Nazwisko FROM Klienci';
 dump($sql2, BG_DATA);
 
 $clients = mysql_query($sql2);
@@ -60,7 +60,7 @@ $sql3 = 'SELECT * FRO Klienci';
 dump($sql3, BG_DATA);
 $clients2 = mysql_query($sql3);
 dump($clients2);
-if (empty($clients2)) {
+if ($clients2 === false) {
 	dump(mysql_error(), BG_DANGER);
 }
 
@@ -74,7 +74,7 @@ if (empty($result2)) {
 dump(mysql_insert_id(), BG_ANSWER);*/
 
 if (array_key_exists('delete', $_GET)) {
-	$sql5 = 'DELETE FROM Klienci WHERE KlientId = ' . $_GET['delete'];
+	$sql5 = 'DELETE FROM Klienci WHERE KlientId = ' . (int) $_GET['delete'];
 	dump($sql5, BG_DATA);
 	$result3 = mysql_query($sql5);
 	dump($result3);
@@ -94,7 +94,7 @@ while ($row = mysql_fetch_assoc($newClients)) {
 $siteroot = current(array_slice(explode('?', $_SERVER['REQUEST_URI']), 0, 1));
 
 $sql6 = 'SELECT * FROM Klienci WHERE Adres LIKE "%Katowice%" AND Imię LIKE "%'
-	. (array_key_exists('search', $_POST) ? $_POST['search'] : '') . '%"';
+	. (array_key_exists('search', $_POST) ? mysql_escape_string($_POST['search']) : '') . '%"';
 dump($sql6, BG_DATA);
 $newClients2 = mysql_query($sql6);
 dump($newClients2);
@@ -119,5 +119,9 @@ while ($row = mysql_fetch_assoc($newClients2)) {
 }
 echo '</pre>';
 
+/*
+ * SELECT * FROM brands WHERE id_user = 2
+ * UPDATE brands ... WHERE id_user = 2 AND id = (int) $_POST['id']
+ */
 mysql_close($link);
 htmlEnd();
