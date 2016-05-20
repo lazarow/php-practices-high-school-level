@@ -1,6 +1,7 @@
 <?php
 define('BG_DATA', '#F7EDBF');
 define('BG_ANSWER', '#D0E799');
+define('BG_DANGER', '#F2DEDE');
 
 /**
  * Display the formatted dump of a variable.
